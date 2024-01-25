@@ -4,7 +4,7 @@ export type Habit = {
     color: string;
     startDate: Date; // Date habit was started
     endDate: Date; // Date habit was deleted
-    results: number[]; // 0 = fail, 1 = success
+    results: boolean[]; 
 }
 
 export const months = [
@@ -14,6 +14,6 @@ export const months = [
 export type Month = typeof months[number];
 
 export const days = [
-    'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+    'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'
 ] as const;
 export type Day = typeof days[number];  

@@ -1,14 +1,15 @@
 import React from 'react'
 import {HabitCheck} from '@/app/ui/habits/habit-check'
-import HabitRow from '@/app/ui/habits/habit-check';
-export default function HabitTable() {
+import HabitTable from '@/app/ui/habits/habit-check';
+
+
+
+export default function Table() {
   return (
-      <div>
-          <HabitRow/>
-          <HabitCheck completed = {true}/>
-          <h1>HELLO</h1>
-      </div>
-  
+    <div>
+      <HabitTable />
+    </div>
+    
   );
 }
 
