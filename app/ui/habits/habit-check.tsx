@@ -50,7 +50,7 @@ export function HabitCheck({color, completed}:{color: string, completed:boolean}
     );
   }
 
-function getPastDays(days) {
+function getPastDays(days: number) {
   const result = [];
   for (let i = 0; i < days; i++) {
     const date = new Date();
