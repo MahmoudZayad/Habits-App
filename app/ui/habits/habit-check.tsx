@@ -10,7 +10,7 @@ import {
 
 
 export function HabitRow({name}:{name:string}) {
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
   
     useEffect(() => {
       const handleResize = () => setWindowWidth(window.innerWidth);
