@@ -9,24 +9,17 @@ import {
 
 
 
-export function HabitRow({name}:{name:string}) {
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+export function HabitRow({title, color, results, numberOfChecks}:{title:string, color:string, results:boolean[], numberOfChecks:number}) {
   
-    useEffect(() => {
-      const handleResize = () => setWindowWidth(window.innerWidth);
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }, []);
-  
-    const numberOfChecks = Math.floor(windowWidth / 100); // Change 200 to the width of your buttons
     const buttons = Array.from({ length: numberOfChecks }, (_, i) => i + 1);
+
   
     return (
       <div className = 'bg-neutral-800 flex space-x-20 justify-end'>
-        <h3 className = 'text-sm text-neutral-100'>{name}</h3>
+        <h3 className = 'text-sm text-neutral-100'>{title}</h3>
         <div className = 'flex space-x-5'>
           {buttons.map((buttonIndex) => (
-            <HabitCheck  color = {""} completed = {true} key={buttonIndex}/>
+            <HabitCheck  color = {color} completed = {results[results.length -  buttonIndex]} key={buttonIndex}/>
           ))}
           </div>
       </div>
@@ -44,7 +37,7 @@ export function HabitCheck({color, completed}:{color: string, completed:boolean}
     return (
       <div>
         <button onClick={handleClick}>
-            {complete ? <CheckIcon className="h-5 w-5 text-green-700" /> : <XMarkIcon className="h-5 w-5 text-neutral-700" />}
+            {complete ? <CheckIcon className={`${color} h-4 w-4`} /> : <XMarkIcon className="h-4 w-4 text-neutral-700" />}
         </button>
       </div>
     );
@@ -62,13 +55,27 @@ function getPastDays(days: number) {
 }
 
 export default function HabitTable() {
-  const habits = ['1', '2', '3']; // Replace with your actual habits
-  const pastDays = getPastDays(12); // Get the past 7 days
+  const habits = ['1', '2', '3']; // Replace with actual habits
+
+
+  let results =  [true, true, true, false, false, false, false, true, true, true, true, true]
+
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+  
+    useEffect(() => {
+      const handleResize = () => setWindowWidth(window.innerWidth);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }, []);
+  
+  const numberOfChecks = Math.floor(windowWidth / 200); // Change 200 to the width of your buttons
+  const pastDays = getPastDays(numberOfChecks); // Get the past 7 days
+  // const boolean = [true, false, true, false, true, false, true, false, true, false, true, false]
 
   return (
     <div className="flex h-screen">
       <div className="w-full md:w-1/2 lg:w-1/3 h-full md:h-1/2 lg:h-1/3 bg-neutral-900 shadow-md rounded-md p-4 m-auto">
-        <div className="text-center flex justify-end space-x-2 text-xs text-neutral-500">
+        <div className="text-center flex justify-end space-x-3 text-xs text-neutral-500">
         {pastDays.map((day, index) => (
             <div key={index}>
               <div>{day[1]}</div>
@@ -78,7 +85,7 @@ export default function HabitTable() {
         </div>
         {habits.map((habit, index) => (
           <div className="p-1" key={index}>
-            <HabitRow name={habit} />
+            <HabitRow title={habit} color = {"text-green-300"} numberOfChecks={numberOfChecks} results = {results}/>
           </div>
         ))}
       </div>

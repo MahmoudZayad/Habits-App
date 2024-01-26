@@ -1,19 +1,15 @@
-export type Habit = {
+export type User = {
+    id: string;
     name: string;
-    description: string;
-    color: string;
+    email: string;
+    password: string;
+  };
+
+export type Habit = {
+    title: string;
+    description: string; 
+    color: string; // Color of habit name and checks
     startDate: Date; // Date habit was started
     endDate: Date; // Date habit was deleted
     results: boolean[]; 
 }
-
-export const months = [
-    'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September',
-    'October', 'November', 'December'
-] as const;
-export type Month = typeof months[number];
-
-export const days = [
-    'SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'
-] as const;
-export type Day = typeof days[number];  
