@@ -60,6 +60,13 @@ export default function HabitTable() {
 
   let results =  [true, true, true, false, false, false, false, true, true, true, true, true]
 
+  const [results2, setResults] = useState(results)
+
+  function handleUpdate() {
+    console.log(results2)
+  }
+
+
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
   
     useEffect(() => {
@@ -68,9 +75,9 @@ export default function HabitTable() {
       return () => window.removeEventListener('resize', handleResize);
     }, []);
   
-  const numberOfChecks = Math.floor(windowWidth / 200); // Change 200 to the width of your buttons
+  const numberOfChecks = Math.floor(windowWidth / 100); // Change 200 to the width of your buttons
   const pastDays = getPastDays(numberOfChecks); // Get the past 7 days
-  // const boolean = [true, false, true, false, true, false, true, false, true, false, true, false]
+
 
   return (
     <div className="flex h-screen">
