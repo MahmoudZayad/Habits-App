@@ -12,9 +12,11 @@
     "@heroicons/react": "^2.1.1",
     "@vercel/postgres": "^0.7.2",
     "clsx": "^2.1.0",
+    "immer": "^10.0.3",
     "next": "14.0.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "use-immer": "^0.9.0"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -9,40 +9,44 @@ import {
 
 
 
-export function HabitRow({title, color, results, numberOfChecks}:{title:string, color:string, results:boolean[], numberOfChecks:number}) {
+export function HabitRow({title, color, results, numberOfChecks, onToggle}:{title:string, color:string, results:boolean[], 
+  numberOfChecks:number, onToggle: (index: number, newCompleted: boolean) => void}) {
   
-    const buttons = Array.from({ length: numberOfChecks }, (_, i) => i + 1);
+  const buttons = Array.from({ length: numberOfChecks }, (_, i) => i + 1);
 
-  
-    return (
-      <div className = 'bg-neutral-800 flex space-x-20 justify-end'>
-        <h3 className = 'text-sm text-neutral-100'>{title}</h3>
-        <div className = 'flex space-x-5'>
-          {buttons.map((buttonIndex) => (
-            <HabitCheck  color = {color} completed = {results[results.length -  buttonIndex]} key={buttonIndex}/>
-          ))}
-          </div>
+  return (
+    <div className = 'bg-neutral-800 flex space-x-20 justify-end'>
+      <h3 className = 'text-sm text-neutral-100'>{title}</h3>
+      <div className = 'flex space-x-5'>
+        {buttons.map((buttonIndex) => (
+          <HabitCheck  color = {color} completed = {results[results.length - buttonIndex]} onToggle={(newCompleted) => onToggle(results.length - buttonIndex, newCompleted)} key={buttonIndex}/>
+        ))}
       </div>
-    );
+    </div>
+  );
+}
+
+export function HabitCheck({color, completed, onToggle}:{color: string, completed:boolean, onToggle: (newCompleted: boolean) => void}) {
+  
+  // To update button
+  const [complete, setComplete] = useState(completed);
+
+  function handleClick() {
+    const newCompletedStatus = !complete; // To allow synchronous update for both onToggle and setComplete
+    onToggle(newCompletedStatus);
+    setComplete(newCompletedStatus);
   }
 
-export function HabitCheck({color, completed}:{color: string, completed:boolean}) {
+  return (
+    <div>
+      <button onClick={handleClick}>
+        {complete ? <CheckIcon className={`${color} h-4 w-4`} /> : <XMarkIcon className="h-4 w-4 text-neutral-700" />}
+      </button>
+    </div>
+  );
+}
 
-    const [complete, setComplete] = useState(completed)
-
-    function handleClick() {
-        setComplete(!complete)
-    }
-
-    return (
-      <div>
-        <button onClick={handleClick}>
-            {complete ? <CheckIcon className={`${color} h-4 w-4`} /> : <XMarkIcon className="h-4 w-4 text-neutral-700" />}
-        </button>
-      </div>
-    );
-  }
-
+// Get previous days from current day
 function getPastDays(days: number) {
   const result = [];
   for (let i = 0; i < days; i++) {
@@ -62,21 +66,33 @@ export default function HabitTable() {
 
   const [results2, setResults] = useState(results)
 
-  function handleUpdate() {
-    console.log(results2)
+  useEffect(() => {
+    console.log("NEXT CLICK")
+    console.log(results2);
+  }, [results2]);
+  
+  function handleToggle(index:number, newCompleted:boolean) {
+    setResults(prevResults => {
+      const newResults = [...prevResults];
+      newResults[index] = newCompleted;
+      
+      return newResults;
+    });
   }
 
 
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
-  
-    useEffect(() => {
-      const handleResize = () => setWindowWidth(window.innerWidth);
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }, []);
+  const [windowWidth, setWindowWidth] = useState(0);
+
+  useEffect(() => {
+  setWindowWidth(window.innerWidth);
+
+  const handleResize = () => setWindowWidth(window.innerWidth);
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   const numberOfChecks = Math.floor(windowWidth / 100); // Change 200 to the width of your buttons
-  const pastDays = getPastDays(numberOfChecks); // Get the past 7 days
+  const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
 
 
   return (
@@ -92,7 +108,7 @@ export default function HabitTable() {
         </div>
         {habits.map((habit, index) => (
           <div className="p-1" key={index}>
-            <HabitRow title={habit} color = {"text-green-300"} numberOfChecks={numberOfChecks} results = {results}/>
+            <HabitRow title={habit} color = {"text-green-300"} numberOfChecks={numberOfChecks} results = {results} onToggle={(index, newCompleted) => handleToggle(index, newCompleted)}/>
           </div>
         ))}
       </div>
