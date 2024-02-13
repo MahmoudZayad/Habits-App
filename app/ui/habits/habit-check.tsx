@@ -15,11 +15,17 @@ export function HabitRow({title, color, results, numberOfChecks, onToggle}:{titl
   const buttons = Array.from({ length: numberOfChecks }, (_, i) => i + 1);
 
   return (
-    <div className = 'bg-neutral-800 flex space-x-20 justify-end'>
-      <h3 className = 'text-sm text-neutral-100'>{title}</h3>
-      <div className = 'flex space-x-5'>
-        {buttons.map((buttonIndex) => (
-          <HabitCheck  color = {color} completed = {results[results.length - buttonIndex]} onToggle={(newCompleted) => onToggle(results.length - buttonIndex, newCompleted)} key={buttonIndex}/>
+
+    <div className="flex justify-between items-center bg-neutral-800">
+      <div className="flex-grow text-left text-sm text-neutral-100">{title}</div>
+      <div className="flex space-x-5 flex-row flex-wrap pr-0.5">
+        {Array(numberOfChecks).fill(0).map((_, buttonIndex) => (
+          <HabitCheck
+            color={color}
+            completed={results[results.length - 1 - buttonIndex]}
+            onToggle={(newCompleted) => onToggle(results.length - 1 - buttonIndex, newCompleted)}
+            key={buttonIndex}
+          />
         ))}
       </div>
     </div>
@@ -59,7 +65,7 @@ function getPastDays(days: number) {
 }
 
 export default function HabitTable() {
-  const habits = ['1', '2', '3']; // Replace with actual habits
+  const habits = ['Scooby', 'Dooby', 'DOOOOOO']; // Replace with actual habits
 
 
   let results =  [true, true, true, false, false, false, false, true, true, true, true, true]
@@ -91,7 +97,7 @@ export default function HabitTable() {
   return () => window.removeEventListener('resize', handleResize);
   }, []);
   
-  const numberOfChecks = Math.floor(windowWidth / 100); // Change 200 to the width of your buttons
+  const numberOfChecks = Math.floor(windowWidth / 150); // Change 200 to the width of your buttons
   const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
 
 
@@ -108,7 +114,11 @@ export default function HabitTable() {
         </div>
         {habits.map((habit, index) => (
           <div className="p-1" key={index}>
-            <HabitRow title={habit} color = {"text-green-300"} numberOfChecks={numberOfChecks} results = {results} onToggle={(index, newCompleted) => handleToggle(index, newCompleted)}/>
+            <HabitRow title={habit} 
+            color = {"text-green-300"} 
+            numberOfChecks={numberOfChecks} 
+            results = {results2} 
+            onToggle={(index, newCompleted) => handleToggle(index, newCompleted)}/>
           </div>
         ))}
       </div>
