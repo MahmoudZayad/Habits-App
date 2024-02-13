@@ -38,7 +38,7 @@ export async function getHabitResults(habits: string[]) {
     try {
         const data = await Promise.all(
             habits.map(async (habitId) => {
-              const habitResults = await sql<HabitResult[]>`
+              const habitResults = await sql<HabitResult>`
                 SELECT * FROM habit_results WHERE habit_id = ${habitId}
               `;
               return habitResults.rows;
