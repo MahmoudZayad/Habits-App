@@ -21,7 +21,7 @@ const habits = [
     user_id: users[0].id,
     title: 'dooby',
     description: 'This is Habit 2',
-    color: 'text-red-300', // Green
+    color: 'text-green-300', // Green
   },
   {
     id: uuidv4(),

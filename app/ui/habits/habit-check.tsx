@@ -7,9 +7,10 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 
+import { Habit, HabitResult } from '../../lib/definitions';
 
 
-export function HabitRow({title, color, results, numberOfChecks, onToggle}:{title:string, color:string, results:boolean[], 
+export function HabitRow({title, color, results, numberOfChecks, onToggle}:{title:string, color:string, results:HabitResult[], 
   numberOfChecks:number, onToggle: (index: number, newCompleted: boolean) => void}) {
   
   const buttons = Array.from({ length: numberOfChecks }, (_, i) => i + 1);
@@ -22,7 +23,7 @@ export function HabitRow({title, color, results, numberOfChecks, onToggle}:{titl
         {Array(numberOfChecks).fill(0).map((_, buttonIndex) => (
           <HabitCheck
             color={color}
-            completed={results[results.length - 1 - buttonIndex]}
+            completed={results[results.length - 1 - buttonIndex].completed}
             onToggle={(newCompleted) => onToggle(results.length - 1 - buttonIndex, newCompleted)}
             key={buttonIndex}
           />
@@ -64,29 +65,27 @@ function getPastDays(days: number) {
   return result;
 }
 
-export default function HabitTable() {
-  const habits = ['Scooby', 'Dooby', 'DOOOOOO']; // Replace with actual habits
+export default function HabitTable({habits, habitResults}:{habits:Habit[], habitResults:HabitResult[][]}) {
 
-
-  let results =  [true, true, true, false, false, false, false, true, true, true, true, true]
-
-  const [results2, setResults] = useState(results)
+  // To update habitResults
+  const [newResults, setResults] = useState(habitResults)
 
   useEffect(() => {
     console.log("NEXT CLICK")
-    console.log(results2);
-  }, [results2]);
+    console.log(newResults);
+  }, [newResults]);
   
-  function handleToggle(index:number, newCompleted:boolean) {
+  // To update proper index of habitResults
+  function handleToggle(habit_index:number, index:number, newCompleted:boolean) {
     setResults(prevResults => {
       const newResults = [...prevResults];
-      newResults[index] = newCompleted;
+      newResults[habit_index][index].completed = newCompleted;
       
       return newResults;
     });
   }
 
-
+  // To dynamically resize window based on client window size
   const [windowWidth, setWindowWidth] = useState(0);
 
   useEffect(() => {
@@ -97,6 +96,7 @@ export default function HabitTable() {
   return () => window.removeEventListener('resize', handleResize);
   }, []);
   
+  // To determine how many checks to display based on window size
   const numberOfChecks = Math.floor(windowWidth / 150); // Change 200 to the width of your buttons
   const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
 
@@ -112,13 +112,13 @@ export default function HabitTable() {
             </div>
           ))}
         </div>
-        {habits.map((habit, index) => (
-          <div className="p-1" key={index}>
-            <HabitRow title={habit} 
-            color = {"text-green-300"} 
+        {habits.map((habit, habit_index) => (
+          <div className="p-1" key={habit_index}>
+            <HabitRow title={habit.title} 
+            color = {habit.color} 
             numberOfChecks={numberOfChecks} 
-            results = {results2} 
-            onToggle={(index, newCompleted) => handleToggle(index, newCompleted)}/>
+            results = {habitResults[habit_index]} 
+            onToggle={(index, newCompleted) => handleToggle(habit_index, index, newCompleted)}/>
           </div>
         ))}
       </div>
