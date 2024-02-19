@@ -1,14 +1,22 @@
-import SideNav from "@/app/ui/habits/sidenav";
-import React from 'react';
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import '@/app/ui/global.css'
 
-export default function Layout( { children } : {children : React.ReactNode}) {
-    return (
-        <div className = "flex h-screen flex-col md:flex-row md:overflow-hidden">
-            <div className = "w-full flex-none md:w-64">
-                <SideNav/>
-            </div>
-            <div className = "flex-grow p-6 md:overflow-y0auto md:p-12">{children}
-            </div>
-        </div>
-    );
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'Habits Tracker',
+  description: 'Track your habits and build a better you.',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  )
 }

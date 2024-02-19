@@ -1,6 +1,7 @@
 'use client'
 import React from 'react';
 import { useState, useEffect } from 'react';
+import  { updateHabits} from '../../lib/actions';
 
 import {
     CheckIcon,
@@ -10,21 +11,17 @@ import {
 import { Habit, HabitResult } from '../../lib/definitions';
 
 
-export function HabitRow({title, color, results, numberOfChecks, onToggle}:{title:string, color:string, results:HabitResult[], 
-  numberOfChecks:number, onToggle: (index: number, newCompleted: boolean) => void}) {
+
+export function HabitRow({title, color, results, numberOfChecks}:{title:string, color:string, results:HabitResult[], numberOfChecks:number}) {
   
-  const buttons = Array.from({ length: numberOfChecks }, (_, i) => i + 1);
-
   return (
-
     <div className="flex justify-between items-center bg-neutral-800">
-      <div className="flex-grow text-left text-sm text-neutral-100">{title}</div>
+      <div className={`flex-grow text-left text-sm ${color}`}>{title}</div>
       <div className="flex space-x-5 flex-row flex-wrap pr-0.5">
         {Array(numberOfChecks).fill(0).map((_, buttonIndex) => (
-          <HabitCheck
+          <HabitCheck 
+            result = {results[results.length - 1 - buttonIndex]}
             color={color}
-            completed={results[results.length - 1 - buttonIndex].completed}
-            onToggle={(newCompleted) => onToggle(results.length - 1 - buttonIndex, newCompleted)}
             key={buttonIndex}
           />
         ))}
@@ -33,15 +30,17 @@ export function HabitRow({title, color, results, numberOfChecks, onToggle}:{titl
   );
 }
 
-export function HabitCheck({color, completed, onToggle}:{color: string, completed:boolean, onToggle: (newCompleted: boolean) => void}) {
+export function HabitCheck({color, result}:{color: string, result:HabitResult}) {
   
-  // To update button
-  const [complete, setComplete] = useState(completed);
+
+  const [complete, setComplete] = useState(result.completed);
+
 
   function handleClick() {
-    const newCompletedStatus = !complete; // To allow synchronous update for both onToggle and setComplete
-    onToggle(newCompletedStatus);
+    const newCompletedStatus:boolean = !complete; 
     setComplete(newCompletedStatus);
+    const updatedResult:HabitResult = {...result, completed: newCompletedStatus};
+    updateHabits(updatedResult);
   }
 
   return (
@@ -67,37 +66,20 @@ function getPastDays(days: number) {
 
 export default function HabitTable({habits, habitResults}:{habits:Habit[], habitResults:HabitResult[][]}) {
 
-  // To update habitResults
-  const [newResults, setResults] = useState(habitResults)
-
-  useEffect(() => {
-    console.log("NEXT CLICK")
-    console.log(newResults);
-  }, [newResults]);
-  
-  // To update proper index of habitResults
-  function handleToggle(habit_index:number, index:number, newCompleted:boolean) {
-    setResults(prevResults => {
-      const newResults = [...prevResults];
-      newResults[habit_index][index].completed = newCompleted;
-      
-      return newResults;
-    });
-  }
 
   // To dynamically resize window based on client window size
   const [windowWidth, setWindowWidth] = useState(0);
 
   useEffect(() => {
-  setWindowWidth(window.innerWidth);
+    setWindowWidth(window.innerWidth);
 
-  const handleResize = () => setWindowWidth(window.innerWidth);
-  window.addEventListener('resize', handleResize);
-  return () => window.removeEventListener('resize', handleResize);
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+
   // To determine how many checks to display based on window size
-  const numberOfChecks = Math.floor(windowWidth / 150); // Change 200 to the width of your buttons
+  const numberOfChecks = Math.floor(windowWidth / 150); // Change 150 to the width of your buttons
   const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
 
 
@@ -117,8 +99,7 @@ export default function HabitTable({habits, habitResults}:{habits:Habit[], habit
             <HabitRow title={habit.title} 
             color = {habit.color} 
             numberOfChecks={numberOfChecks} 
-            results = {habitResults[habit_index]} 
-            onToggle={(index, newCompleted) => handleToggle(habit_index, index, newCompleted)}/>
+            results = {habitResults[habit_index]} />
           </div>
         ))}
       </div>
