@@ -1,30 +1,25 @@
-import { signOut } from "next-auth/react";
-import { getServerSession } from "next-auth";
 
-import { Button } from './button';
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/utils/auth";
-import SignInWithGoogle from './google-login';
+import { SignInWithGoogle, SignOut, TrackMyHabits} from './session-buttons';
 
 
 export default async function LoginForm() {
   const session = await getServerSession(authOptions);
-  // const { data: session, status} = useSession();
   return (
     <div>
     { session ? (
-      <div>
-        <p>Already signed in as {session.user?.email}</p>
-        <Button onClick = {()=>signOut()} className="mt-4 w-full">
-          Track My Habits! 
-        </Button>
-        <Button onClick = {()=>signOut()} className="mt-4 w-full">
-          Sign out
-        </Button>
+      <div className="bg-neutral-900 flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
+        <h1 className={`mb-3 text-center font-semibold text-2xl`}>
+          Already signed in as {session.user?.name}
+        </h1>
+        <TrackMyHabits/>
+        <SignOut/>
       </div>
     ) : (  
       <div className="bg-neutral-900 flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
           <h1 className={`mb-3 text-center font-semibold text-3xl`}>
-            login
+            Login
           </h1>
           {/* <div className="w-full">
             <div>

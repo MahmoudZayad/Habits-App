@@ -1,15 +1,12 @@
-import  prisma  from "./db"; 
+import prisma from '../app/utils/db'; 
+import { habits, habit_results } from '../app/lib/placeholder-data';
 
 async function main() {
     console.log(`Start seeding ...`);
 
-    for (let user of users) {
-        await prisma.user.create({
-            data: user,
-        });
-    }
-
-    for (let habit of habits) {
+    for (let habit of habits) 
+        console.log(habit);
+    {
         await prisma.habit.create({
             data: habit,
         });
