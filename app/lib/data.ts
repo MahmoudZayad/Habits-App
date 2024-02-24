@@ -1,17 +1,43 @@
-import { sql } from '@vercel/postgres';
+import { userAgent } from 'next/server';
+import prisma from '../utils/db';
 
-import {
-    User,
-    Habit,
-    HabitResult
-} from './definitions';
+import {Habit, HabitResult } from '@prisma/client';
+
 import { unstable_noStore as noStore } from 'next/cache';
+
+
+async function main() {
+
+}
+
+main()
+    .then(async () => {
+        await prisma.$disconnect()
+    })
+    .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+    })
+
 
 // Use user email to grab the user return user row
 export async function getUser(email: string) {
     try {
-        const user = await sql`SELECT * FROM users WHERE email = ${email}`;
-        return user.rows[0] as User;
+        
+        const data = await prisma.user.findFirst({  
+            where: { 
+                email: email 
+            } 
+        });
+
+        if (data) { 
+            return data.id as string;
+            
+        }   else { 
+            throw new Error('User not found.'); 
+        }
+
     } catch (error) {
         console.error('Failed to fetch user.', error);
         throw new Error('Failed to fetch user.');
@@ -22,10 +48,14 @@ export async function getUser(email: string) {
 export async function getHabits(userId: string) {
     noStore();
     try {
-        const data = await sql`SELECT * FROM habits WHERE user_id = ${userId}`;
-        const habits = data.rows as Habit[];
-        return habits;
-        
+        const data:Habit[] = await prisma.habit.findMany({
+            where: {
+                userId: userId
+            }
+        });
+        console.log(data)
+        return data;
+
     } catch (error) {
         console.error('Database error, failed fetching habits.', error);
         throw new Error('Failed to fetch habits.');
@@ -36,14 +66,17 @@ export async function getHabits(userId: string) {
 export async function getHabitResults(habits: string[]) {
     noStore();
     try {
-        const data = await Promise.all(
+        const data:HabitResult[][] = await Promise.all(
             habits.map(async (habitId) => {
-              const habitResults = await sql<HabitResult>`
-                SELECT * FROM habit_results WHERE habit_id = ${habitId}
-              `;
-              return habitResults.rows;
+              const habitResults = prisma.habitResult.findMany({
+                where: {
+                  habitId: habitId
+                }
+              });
+              return habitResults;
             })
           );
+        console.log(data);
         return data;
         
     } catch (error) {
@@ -51,21 +84,6 @@ export async function getHabitResults(habits: string[]) {
         throw new Error('Failed to fetch habit results.');
     }
 }
-
-export async function printUserHabitsAndResults(user: string) {
-    try {
-      const userId = await getUser(user);
-      console.log('User:', userId);
-      const habits = await getHabits(userId.id);
-      // console.log('Habits:', habits);
-  
-      const habitResults = await getHabitResults(habits.map((habit) => habit.id));
-      
-      
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
 
 /*
 Yes, you can definitely update the database when a user logs in. You can modify your login function to check for missing dates and fill them in as part of the login process. 

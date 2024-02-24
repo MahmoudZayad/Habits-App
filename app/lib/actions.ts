@@ -1,18 +1,25 @@
 
 'use server';
-import { HabitResult } from './definitions';
-import { sql } from '@vercel/postgres';
+import { HabitResult } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 import { redirect} from 'next/navigation';
-
+import prisma from '../utils/db';
 
 
 export async function updateHabits(result:HabitResult) {
     
-    await sql`
-        UPDATE habit_results
-        SET completed = ${result.completed} 
-        WHERE date = ${result.date} AND habit_id = ${result.habit_id}`;
+    await prisma.habitResult.update({
+
+        where: {
+            date_habitId: {
+                date: result.date,
+                habitId: result.habitId
+            }
+        },
+        data: {
+            completed: result.completed
+        }
+    });
     
     revalidatePath('/habits');
     redirect('/habits');

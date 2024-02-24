@@ -8,7 +8,7 @@ import {
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 
-import { Habit, HabitResult } from '../../lib/definitions';
+import { Habit, HabitResult } from '@prisma/client';
 
 
 

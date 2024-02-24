@@ -12,7 +12,7 @@ import {
 export function SignInWithGoogle() {
   return (
     <Button onClick = {()=>signIn("google", {
-      callbackUrl: `${window.location.origin}`,
+      callbackUrl: `${window.location.origin}/habits`,
     })
     } className="mt-4 w-full">
       Login with Google <ArrowRightIcon className="ml-auto h-5 w-5" />
