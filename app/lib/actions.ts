@@ -8,7 +8,7 @@ import prisma from '../utils/db';
 
 export async function updateHabits(result:HabitResult) {
     
-    await prisma.habitResult.update({
+    await prisma.habitResult.upsert({
 
         where: {
             date_habitId: {
@@ -16,11 +16,17 @@ export async function updateHabits(result:HabitResult) {
                 habitId: result.habitId
             }
         },
-        data: {
+        update: {
             completed: result.completed
+        },
+        create: {
+            date: result.date,
+            completed: result.completed,
+            habitId: result.habitId
         }
     });
     
     revalidatePath('/habits');
     redirect('/habits');
 }
+

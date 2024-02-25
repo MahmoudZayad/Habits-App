@@ -11,20 +11,22 @@ import {
 import { Habit, HabitResult } from '@prisma/client';
 
 
-
-export function HabitRow({title, color, results, numberOfChecks}:{title:string, color:string, results:HabitResult[], numberOfChecks:number}) {
-  
+export function HabitRow({title, color, results, habitId, dates, numberOfChecks}:{title:string, color:string, results:HabitResult[], habitId:string, dates:string[][], numberOfChecks:number}) {
   return (
     <div className="flex justify-between items-center bg-neutral-800">
       <div className={`flex-grow text-left text-sm ${color}`}>{title}</div>
       <div className="flex space-x-5 flex-row flex-wrap pr-0.5">
-        {Array(numberOfChecks).fill(0).map((_, buttonIndex) => (
-          <HabitCheck 
-            result = {results[results.length - 1 - buttonIndex]}
-            color={color}
-            key={buttonIndex}
-          />
-        ))}
+      {Array(numberOfChecks).fill(0).map((_, buttonIndex) => {
+          let foundResult = results.find((result) => result.date.getUTCDate() === new Date(dates[buttonIndex][2]).getUTCDate());
+          return (
+            <HabitCheck 
+              result={foundResult ? foundResult : {date:new Date(dates[buttonIndex][2]), completed:false, habitId:habitId } as HabitResult}
+              color={color}
+              key={buttonIndex}
+
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -32,7 +34,6 @@ export function HabitRow({title, color, results, numberOfChecks}:{title:string, 
 
 export function HabitCheck({color, result}:{color: string, result:HabitResult}) {
   
-
   const [complete, setComplete] = useState(result.completed);
 
 
@@ -54,12 +55,14 @@ export function HabitCheck({color, result}:{color: string, result:HabitResult}) 
 
 // Get previous days from current day
 function getPastDays(days: number) {
-  const result = [];
+  const result:string[][] = [];
   for (let i = 0; i < days; i++) {
-    const date = new Date();
+    const date:Date = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
     date.setDate(date.getDate() - i);
-    const formattedDate = date.toLocaleDateString('en-US', { day: 'numeric', weekday: 'short' });
-    result.push(formattedDate.toUpperCase().split(' '));
+    const formattedDate:string = date.toLocaleDateString('en-US', { day: 'numeric', weekday: 'short' });
+    const splitDate:string[] = formattedDate.toUpperCase().split(' ')
+    splitDate.push(date.toString());
+    result.push(splitDate);
   }
   return result;
 }
@@ -81,7 +84,7 @@ export default function HabitTable({habits, habitResults}:{habits:Habit[], habit
   // To determine how many checks to display based on window size
   const numberOfChecks = Math.floor(windowWidth / 150); // Change 150 to the width of your buttons
   const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
-
+  // console.log(pastDays);
 
   return (
     <div className="flex h-screen">
@@ -99,7 +102,10 @@ export default function HabitTable({habits, habitResults}:{habits:Habit[], habit
             <HabitRow title={habit.title} 
             color = {habit.color} 
             numberOfChecks={numberOfChecks} 
-            results = {habitResults[habit_index]} />
+            results = {habitResults[habit_index]} 
+            habitId = {habit.id}
+            dates = {pastDays}
+            />
           </div>
         ))}
       </div>

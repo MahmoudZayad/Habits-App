@@ -1,4 +1,4 @@
-import { userAgent } from 'next/server';
+
 import prisma from '../utils/db';
 
 import {Habit, HabitResult } from '@prisma/client';
@@ -53,7 +53,6 @@ export async function getHabits(userId: string) {
                 userId: userId
             }
         });
-        console.log(data)
         return data;
 
     } catch (error) {
@@ -76,7 +75,6 @@ export async function getHabitResults(habits: string[]) {
               return habitResults;
             })
           );
-        console.log(data);
         return data;
         
     } catch (error) {
@@ -84,6 +82,32 @@ export async function getHabitResults(habits: string[]) {
         throw new Error('Failed to fetch habit results.');
     }
 }
+
+// Use habit_ids to grab all habit results for each habit
+export async function getHabitResultByDateAndId(date:Date, habitId:string) {
+    noStore();
+    
+    try {
+        const data = await prisma.habitResult.findFirst({  
+            where: {
+                date: date,
+                habitId: habitId 
+            }
+        });
+
+        if (data) { 
+            return data as HabitResult;
+        } else { 
+            return {date: date, completed: false, habitId: habitId} as HabitResult;
+        }
+        
+    } catch (error) {
+        console.error('Database error, failed fetching habit results.', error);
+        throw new Error('Failed to fetch habit results.');
+    }
+}
+
+
 
 /*
 Yes, you can definitely update the database when a user logs in. You can modify your login function to check for missing dates and fill them in as part of the login process. 
