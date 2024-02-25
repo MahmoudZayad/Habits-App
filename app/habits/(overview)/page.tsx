@@ -2,7 +2,7 @@ import React from 'react'
 
 import HabitTable from '@/app/ui/habits/habit-check';
 import { getUser, getHabits, getHabitResults} from '../../lib/data';
-import { User, Habit, HabitResult } from '@prisma/client';
+import { Habit, HabitResult } from '@prisma/client';
 
 
 

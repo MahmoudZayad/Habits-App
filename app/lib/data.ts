@@ -1,4 +1,3 @@
-
 import prisma from '../utils/db';
 
 import {Habit, HabitResult } from '@prisma/client';

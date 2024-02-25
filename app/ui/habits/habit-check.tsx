@@ -11,7 +11,8 @@ import {
 import { Habit, HabitResult } from '@prisma/client';
 
 
-export function HabitRow({title, color, results, habitId, dates, numberOfChecks}:{title:string, color:string, results:HabitResult[], habitId:string, dates:string[][], numberOfChecks:number}) {
+export function HabitRow({title, color, results, habitId, dates, numberOfChecks}:
+  {title:string, color:string, results:HabitResult[], habitId:string, dates:string[][], numberOfChecks:number}) {
   return (
     <div className="flex justify-between items-center bg-neutral-800">
       <div className={`flex-grow text-left text-sm ${color}`}>{title}</div>
@@ -20,10 +21,9 @@ export function HabitRow({title, color, results, habitId, dates, numberOfChecks}
           let foundResult = results.find((result) => result.date.getUTCDate() === new Date(dates[buttonIndex][2]).getUTCDate());
           return (
             <HabitCheck 
-              result={foundResult ? foundResult : {date:new Date(dates[buttonIndex][2]), completed:false, habitId:habitId } as HabitResult}
+              result={foundResult ? foundResult : {date:new Date(dates[buttonIndex][2]), completed:false, habitId:habitId} as HabitResult}
               color={color}
               key={buttonIndex}
-
             />
           );
         })}
