@@ -6,8 +6,7 @@ export default function App() {
     return (
         <div>
         <AddHabit/>
-        <AddHabitForm/>
-        <ColorPicker color ={""}/>
+        <AddHabitForm color = "bg-[#64b5f6]"/>
         </div>
     );
     }

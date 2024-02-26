@@ -7,54 +7,83 @@ import {
     PencilIcon,
     PencilSquareIcon
 } from '@heroicons/react/24/outline'
+import clsx from 'clsx';
 
 export function AddHabit() {
   return (
     <button>
-        <PlusIcon className="h-4 w-4" />
+        <PlusIcon className="text-neutral-700 h-6 w-6" />
     </button>
   );
 }  
 
-export function AddHabitForm() {
+export function AddHabitForm({color}: {color: string}) {
+    const [selectedColor, setSelectedColor] = useState(color);
+    const [showColorPicker, setShowColorPicker] = useState(false);
+    // const showColorPicker = true;
+    const toggleColorPicker = () => setShowColorPicker(!showColorPicker);
   return (
-    <div className="mb-4 flex items-center justify-center ">
-        <div className='bg-neutral-800 rounded-lg relative mx-auto flex w-full max-w-[300px] flex-col space-y-2.5 p-4'>
-            <div className = "flex mt-1 inline-flex">
-                <label htmlFor="habitName"></label>
-                <div className="relative flex-grow mr-4">
-                    <input
-                        className="bg-neutral-800 peer block w-full rounded-xl border border-neutral-600 py-[9px] pl-3 text-sm outline-2 placeholder:text-neutral-500"
-                        id="habitName"
-                        type="text"
-                        name="habitName"
-                        placeholder="e.g. Read"
-                        required
-                    />
-                    <TagIcon className="pointer-events-none absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-neutral-500 peer-focus:text-neutral-400" />
-                   
+    <div className="flex items-center justify-center flex-col">
+        <div className={clsx("mb-4 flex items-center justify-center",
+            {
+                'opacity-100' : !showColorPicker,
+                'opacity-50' : showColorPicker
+            },
+            )}>
+            <div className='bg-neutral-800 rounded-lg relative mx-auto flex w-full min-w-[300px] max-w-[300px] flex-col space-y-2.5 p-4'>
+                <div className = "flex mt-1 inline-flex">
+                    <label htmlFor="habitName"></label>
+                    <div className="relative mr-4">
+                        <input
+                            className="bg-neutral-800 peer focus:outline-neutral-700 focus:ring-2 block w-full rounded-xl border border-neutral-600 py-[9px] pl-3 text-sm outline-2 placeholder:text-neutral-500"
+                            id="habitName"
+                            type="text"
+                            name="habitName"
+                            placeholder="e.g. Read"
+                            required
+                            readOnly = {showColorPicker}
+
+                        />
+                        <TagIcon className="pointer-events-none absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-neutral-500 peer-focus:text-neutral-400" />
+                    </div>
+                    <div className = "mx-auto w-15 relative flex flex-col justify-center items-center mt-[-10px] border-neutral-700 p-1">
+                        <h1 className = "absolute font-normal text-sm text-neutral-500 mb-5">Color</h1>
+                        <button onClick ={toggleColorPicker} className={clsx(`${selectedColor} mt-5 bg-red-300 border-neutral-700 rounded hover:ml-0.5 hover:w-4 hover:h-4 hover:opacity-50`,
+                        {
+                            "h-4 w-4 opacity-50 ml-0.5": showColorPicker,
+                            "h-5 w-5": !showColorPicker, 
+                        }
+                        )}>
+                        </button>
+                    </div>
                 </div>
-                <button className="bg-red-300">
-                    Color
-                    {/* <PencilSquareIcon className="pointer-events-none" /> */}
-                </button>
-            </div>
-            <div className="mt-1">
-                <label htmlFor="description"></label>
-                <div className="relative">
-                    <input
-                        className="bg-neutral-800 peer block w-full rounded-xl border border-neutral-600 py-[9px] pl-3 text-sm outline-2 placeholder:text-neutral-500"
-                        id="description"
-                        type="text"
-                        name="description"
-                        placeholder="e.g. Read 30 minutes every day"
-                        minLength={0}
-                    />
-                    <PencilIcon className="pointer-events-none absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-neutral-500 peer-focus:text-neutral-400" />
+                <div className="mt-1">
+                    <label htmlFor="description"></label>
+                    <div className="relative">
+                        <input
+                            className="bg-neutral-800 peer focus:outline-neutral-700 focus:ring-2 block w-full rounded-xl border border-neutral-600 py-[9px] pl-3 text-sm outline-2 placeholder:text-neutral-500"
+                            id="description"
+                            type="text"
+                            name="description"
+                            placeholder="e.g. Read 30 minutes every day"
+                            readOnly = {showColorPicker}
+                            minLength={0}
+                        />
+                        <PencilIcon className="pointer-events-none absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-neutral-500 peer-focus:text-neutral-400" />
+                    </div>
                 </div>
             </div>
         </div>
+        <div className = {clsx("",
+                {
+                    "hidden": !showColorPicker,
+                    "block": showColorPicker,
+                }
+                
+            )} >
+            <ColorPicker color = {selectedColor}/>
         </div>
+    </div>   
   );
 }
 
@@ -67,24 +96,26 @@ export function ColorPicker({color}: {color: string}) {
         'bg-[#80cbc6]', 'bg-[#81dfeb]','bg-[#81d5fa]', 'bg-[#64b5f6]',
         'bg-[#f590b2]', 'bg-[#cd94d9]','bg-[#b29edb]', 'bg-[#9fa9da]',
         'bg-[#bcaba4]', 'bg-[#f5f5f5]','bg-[#e0e0e0]', 'bg-[#9e9e9e]']
-    useEffect(() => {
-        console.log(selectedColor);
-    })
-    // console.log(selectedColor);
+
     return(
-        <div className="relative bg-neutral-800 rounded-lg p-3 pl-10 pr-10 flex flex-col items-start mx-auto w-fit flex">
-            <h2 className="absolute pb-8 font-semibold left-2">Change Color</h2>
+        <div  id ="colorPicker" className="relative bg-neutral-800 rounded-lg p-3 pl-10 pr-10 flex flex-col items-start mx-auto w-fit flex">
+            <h1 className="absolute text-neutral-500 pb-8 font-normal text-md left-2">Change Color</h1>
             <div className="mt-12 mb-4 inline-grid grid-cols-4 gap-1 grid-rows-5 items-center justify-center">
                 {
                     colors.map((color, index) => {
                         return (
-                            <button onClick = {() => setSelectedColor(color)} key={index} className={`${color} w-8 h-8 rounded-full`}></button>
+                            <button onClick = {() => setSelectedColor(color)} key={index} className={clsx(`${color} w-8 h-8 rounded-full hover:ml-0.5 hover:w-7 hover:h-7 hover:opacity-50 hover:${color}`,
+                            {
+                                "w-7 h-7 ml-0.5 opacity-50": selectedColor === color,
+                                "w-8 h-8": selectedColor !== color,
+                            }
+                            )}
+                            ></button>
                         );
                     })
                 }      
             </div>
-        </div>
-        
-    );
-    
+        </div>  
+    );   
 }
+
