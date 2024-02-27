@@ -2,6 +2,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import  { updateHabits, deleteHabit} from '../../lib/actions';
+import { Tooltip } from 'react-tooltip'
 
 import {
     CheckIcon,
@@ -14,24 +15,37 @@ import { AddHabit } from '@/app/ui/habits/add-habit';
 
 
 
-export function HabitRow({title, color, results, habitId, dates, numberOfChecks}:
-  {title:string, color:string, results:HabitResult[], habitId:string, dates:string[][], numberOfChecks:number}) {
+export function HabitRow({title, color, results, description, habitId, dates, numberOfChecks}:
+  {title:string, color:string, results:HabitResult[], description:string, habitId:string, dates:string[][], numberOfChecks:number}) {
   return (
-    <div className="pl-1 flex justify-between items-center bg-neutral-800">
-      <button onClick = {() => deleteHabit(habitId)} className={`flex-grow text-left text-sm text-${color}`}>{title}</button>
-      <div className="flex space-x-5 flex-row flex-wrap pr-0.5">
-      {Array(numberOfChecks).fill(0).map((_, buttonIndex) => {
-          let foundResult = results.find((result) => result.date.getUTCDate() === new Date(dates[buttonIndex][2]).getUTCDate());
-          return (
-            <HabitCheck 
-              result={foundResult ? foundResult : {date:new Date(dates[buttonIndex][2]), completed:false, habitId:habitId} as HabitResult}
-              color={color}
-              key={buttonIndex}
-            />
-          );
-        })}
+  <div className="pl-1 flex justify-between items-center bg-neutral-800">
+    <a  
+    data-tooltip-id={habitId} 
+    data-tooltip-content=""
+    data-tooltip-place="bottom"
+     className={`flex-grow text-left text-sm text-${color}`}>{title}</a>
+    <Tooltip clickable = {true} id={habitId}>
+      <div className = "w-16 items-center text-xs flex flex-col">
+        <text className = {`text-wrap text-center flex text-${color}`}>{description} </text>
+        <button 
+        onClick = {() => deleteHabit(habitId)} 
+        className = "mt-2 hover:bg-neutral-600 border-red-400 rounded text-neutral-400 w-12" >
+        Delete</button>
       </div>
+    </Tooltip>
+    <div className="flex space-x-5 flex-row flex-wrap pr-0.5">  
+    {Array(numberOfChecks).fill(0).map((_, buttonIndex) => {
+        let foundResult = results.find((result) => result.date.getUTCDate() === new Date(dates[buttonIndex][2]).getUTCDate());
+        return (
+          <HabitCheck 
+            result={foundResult ? foundResult : {date:new Date(dates[buttonIndex][2]), completed:false, habitId:habitId} as HabitResult}
+            color={color}
+            key={buttonIndex}
+          />
+        );
+      })}
     </div>
+  </div>
   );
 }
 
@@ -112,6 +126,7 @@ export default function HabitTable({habits, habitResults}:{habits:Habit[], habit
             color = {habit.color} 
             numberOfChecks={numberOfChecks} 
             results = {habitResults[habit_index]} 
+            description = {habit.description}
             habitId = {habit.id}
             dates = {pastDays}
             />
