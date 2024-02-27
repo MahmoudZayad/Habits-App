@@ -15,9 +15,27 @@ import { AddHabit } from '@/app/ui/habits/add-habit';
 
 
 
-export function HabitRow({title, color, results, description, habitId, dates, numberOfChecks}:
-  {title:string, color:string, results:HabitResult[], description:string, habitId:string, dates:string[][], numberOfChecks:number}) {
-  return (
+export function HabitRow({title, color, results, description, habitId, dates, numberOfChecks, habits, setHabits}:
+  {title:string, color:string, results:HabitResult[], description:string, habitId:string, dates:string[][], numberOfChecks:number, habits:Habit[], setHabits: Function}) {
+  
+    const handleDelete = async () => {
+      // Keep a copy of the current habits in case we need to rollback
+      const previousHabits = [...habits];
+  
+      // Optimistically remove the habit from the UI
+      setHabits(habits.filter(habit => habit.id !== habitId));
+  
+      try {
+        // Send the delete request to the server
+        await deleteHabit(habitId);
+      } catch (error) {
+        // If the request fails, rollback the change in the UI and show an error message
+        setHabits(previousHabits);
+        alert('Failed to delete habit');
+      }
+    };
+  
+    return (
   <div className="pl-1 flex justify-between items-center bg-neutral-800">
     <a  
     data-tooltip-id={habitId} 
@@ -28,7 +46,7 @@ export function HabitRow({title, color, results, description, habitId, dates, nu
       <div className = "w-16 items-center text-xs flex flex-col">
         <text className = {`text-wrap text-center flex text-${color}`}>{description} </text>
         <button 
-        onClick = {() => deleteHabit(habitId)} 
+        onClick = {() => handleDelete()} 
         className = "mt-2 hover:bg-neutral-600 border-red-400 rounded text-neutral-400 w-12" >
         Delete</button>
       </div>
@@ -54,11 +72,18 @@ export function HabitCheck({color, result}:{color: string, result:HabitResult}) 
   const [complete, setComplete] = useState(result.completed);
 
 
-  function handleClick() {
-    const newCompletedStatus:boolean = !complete; 
+  const handleClick = async () =>{
+    const newCompletedStatus:boolean = !complete; // Toggle the completed status
     setComplete(newCompletedStatus);
     const updatedResult:HabitResult = {...result, completed: newCompletedStatus};
-    updateHabits(updatedResult);
+    
+    try {
+      await updateHabits(updatedResult);
+    } catch (error) {
+      setComplete(!newCompletedStatus); // If the request fails, rollback the change in the UI
+      alert('Failed to update habit');
+    }
+    
   }
 
   return (
@@ -84,8 +109,9 @@ function getPastDays(days: number) {
   return result;
 }
 
-export default function HabitTable({habits, habitResults}:{habits:Habit[], habitResults:HabitResult[][]}) {
-
+export default function HabitTable({habits: initialHabits, habitResults}:{habits:Habit[], habitResults:HabitResult[][]}) {
+  const habitsCopy:Habit[]  = [...initialHabits];
+  const [habits, setHabits] = useState(initialHabits);
 
   // To dynamically resize window based on client window size
   const [windowWidth, setWindowWidth] = useState(0);
@@ -101,7 +127,6 @@ export default function HabitTable({habits, habitResults}:{habits:Habit[], habit
 
   const numberOfChecks = Math.floor((windowWidth / 3) / 50); // Change 150 to the width of your buttons
   const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
-  // console.log(pastDays);
 
   return (
     <div className="flex h-screen">
@@ -129,6 +154,8 @@ export default function HabitTable({habits, habitResults}:{habits:Habit[], habit
             description = {habit.description}
             habitId = {habit.id}
             dates = {pastDays}
+            habits = {habitsCopy}
+            setHabits = {setHabits}
             />
           </div>
         ))}

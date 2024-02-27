@@ -26,9 +26,6 @@ export async function updateHabits(result:HabitResult) {
             habitId: result.habitId
         }
     });
-    
-    revalidatePath('/habits');
-    redirect('/habits');
 }
 
 export async function createHabit(habit:Habit) {
@@ -54,6 +51,5 @@ export async function deleteHabit(habitId:string) {
 
         }
     });
-    revalidatePath('/habits');
-    redirect('/habits');
+
 }
