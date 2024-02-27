@@ -1,7 +1,7 @@
 'use client'
 import React from 'react';
 import { useState, useEffect } from 'react';
-import  { updateHabits} from '../../lib/actions';
+import  { updateHabits, deleteHabit} from '../../lib/actions';
 
 import {
     CheckIcon,
@@ -9,13 +9,16 @@ import {
 } from '@heroicons/react/24/outline'
 
 import { Habit, HabitResult } from '@prisma/client';
+import { AddHabit } from '@/app/ui/habits/add-habit';   
+
+
 
 
 export function HabitRow({title, color, results, habitId, dates, numberOfChecks}:
   {title:string, color:string, results:HabitResult[], habitId:string, dates:string[][], numberOfChecks:number}) {
   return (
-    <div className="flex justify-between items-center bg-neutral-800">
-      <div className={`flex-grow text-left text-sm ${color}`}>{title}</div>
+    <div className="pl-1 flex justify-between items-center bg-neutral-800">
+      <button onClick = {() => deleteHabit(habitId)} className={`flex-grow text-left text-sm text-${color}`}>{title}</button>
       <div className="flex space-x-5 flex-row flex-wrap pr-0.5">
       {Array(numberOfChecks).fill(0).map((_, buttonIndex) => {
           let foundResult = results.find((result) => result.date.getUTCDate() === new Date(dates[buttonIndex][2]).getUTCDate());
@@ -47,7 +50,7 @@ export function HabitCheck({color, result}:{color: string, result:HabitResult}) 
   return (
     <div>
       <button onClick={handleClick}>
-        {complete ? <CheckIcon className={`${color} h-4 w-4`} /> : <XMarkIcon className="h-4 w-4 text-neutral-700" />}
+        {complete ? <CheckIcon className={`h-4 w-4 text-${color}`} /> : <XMarkIcon className="h-4 w-4 text-neutral-700" />}
       </button>
     </div>
   );
@@ -81,14 +84,20 @@ export default function HabitTable({habits, habitResults}:{habits:Habit[], habit
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // To determine how many checks to display based on window size
-  const numberOfChecks = Math.floor(windowWidth / 150); // Change 150 to the width of your buttons
+
+  const numberOfChecks = Math.floor((windowWidth / 3) / 50); // Change 150 to the width of your buttons
   const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
   // console.log(pastDays);
 
   return (
     <div className="flex h-screen">
-      <div className="w-full md:w-1/2 lg:w-1/3 h-full md:h-1/2 lg:h-1/3 bg-neutral-900 shadow-md rounded-md p-4 m-auto">
+      <div className="h-full w-full md:w-1/2 lg:w-1/3 bg-neutral-900 shadow-md rounded-md  m-auto">
+        <div className="pl-1 pr-1 bg-neutral-950 flex justify-between">
+          <h1 className = "text-neutral-50">Habits</h1>
+          <div className="flex">
+              <AddHabit/>
+          </div>
+        </div>
         <div className="text-center flex justify-end space-x-3 text-xs text-neutral-500">
         {pastDays.map((day, index) => (
             <div key={index}>

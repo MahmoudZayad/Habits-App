@@ -1,6 +1,7 @@
 import React from 'react'
 
 import HabitTable from '@/app/ui/habits/habit-check';
+import { AddHabit } from '@/app/ui/habits/add-habit';   
 import { getUser, getHabits, getHabitResults} from '../../lib/data';
 import { Habit, HabitResult } from '@prisma/client';
 

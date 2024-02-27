@@ -2,6 +2,7 @@
 import { signIn, signOut } from "next-auth/react";
 import { Button } from './button';
 import { useRouter } from "next/navigation";
+import Link from 'next/link';
 import { 
   ArrowRightIcon,
   ArrowRightStartOnRectangleIcon,
@@ -29,12 +30,15 @@ export function SignOut() {
 }
 
 export function TrackMyHabits() {
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
-    <Button onClick = {() => router.push('/habits')}className="mt-4 w-full">
-      Track My Habits! <CheckIcon className="ml-auto h-5 w-5" />
-    </Button>
+    <Link href="/habits">
+        <Button className="mt-4 w-full">
+        Track My Habits! <CheckIcon className="ml-auto h-5 w-5" />
+      </Button>
+    </Link>
+    
     
   )
 }
