@@ -23,7 +23,7 @@ This is a full-stack, CRUD, web app written in **TypeScript**, using **React** w
 
 The application itself is a re-creation of the <a href = "https://loophabits.org/">Loop Habit Tracker</a> app on Android. I really like using the app and figured it would be a great starting point to work on my web-development skills. 
 
-My application allows users to Login, Create Habits, Delete Habits, and Track their progress daily. All the data is saved to a *PostgresSQL* database hosted on *Vercel*. I intend to add more to this application, including a statistics page to visualize user progress and general improvements to navigation.
+My application allows users to Login, Create Habits, Delete Habits, and Track their progress daily. All the data is saved to a *PostgreSQL* database hosted on *Vercel*. I intend to add more to this application, including a statistics page to visualize user progress and general improvements to navigation.
 
 ### Purpose
 

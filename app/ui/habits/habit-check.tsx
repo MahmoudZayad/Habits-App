@@ -125,19 +125,19 @@ export default function HabitTable({habits: initialHabits, habitResults}:{habits
   }, []);
 
 
-  const numberOfChecks = Math.floor((windowWidth / 3) / 50); // Change 150 to the width of your buttons
+  const numberOfChecks = Math.floor((windowWidth) / 75); // Change 150 to the width of your buttons
   const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
 
   return (
-    <div className="flex h-screen">
-      <div className="h-full w-full md:w-1/2 lg:w-1/3 bg-neutral-900 shadow-md rounded-md  m-auto">
+    <div className="relative h-screen w-screen">
+      <div className="absolute w-full md:left-[37.5%] top-0 h-full md:w-[62.5%] bg-neutral-900 shadow-md rounded-md">
         <div className="pl-1 pr-1 bg-neutral-950 flex justify-between">
           <h1 className = "text-neutral-50">Habits</h1>
           <div className="flex">
               <AddHabit/>
           </div>
         </div>
-        <div className="text-center flex justify-end space-x-3 text-xs text-neutral-500">
+        <div className="text-center flex justify-end space-x-3 text-xs text-neutral-500 pr-1">
         {pastDays.map((day, index) => (
             <div key={index}>
               <div>{day[1]}</div>

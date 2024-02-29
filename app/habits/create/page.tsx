@@ -9,7 +9,7 @@ export default async function App() {
     const session = await getServerSession(authOptions);
     
     if (session === null) {
-        redirect('/login');
+        redirect('/');
     }
 
     const user:string = await getUser(session.user?.email as string);
