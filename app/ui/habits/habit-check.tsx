@@ -41,8 +41,8 @@ export function HabitRow({title, color, results, description, habitId, dates, nu
     data-tooltip-id={habitId} 
     data-tooltip-content=""
     data-tooltip-place="bottom"
-     className={`flex-grow text-left text-sm text-${color}`}>{title}</a>
-    <Tooltip clickable = {true} id={habitId}>
+     className={`flex-grow text-left text-sm text-${color} `}>{title.length >= 25 ? title.slice(0, 20) + "..." : title  }</a>
+    <Tooltip  clickable = {true} id={habitId}>
       <div className = "w-16 items-center text-xs flex flex-col">
         <text className = {`text-wrap text-center flex text-${color}`}>{description} </text>
         <button 
@@ -51,7 +51,7 @@ export function HabitRow({title, color, results, description, habitId, dates, nu
         Delete</button>
       </div>
     </Tooltip>
-    <div className="flex space-x-5 flex-row flex-wrap pr-0.5">  
+    <div className="flex space-x-[20.75px] flex-row flex-wrap pr-[6px]">  
     {Array(numberOfChecks).fill(0).map((_, buttonIndex) => {
         let foundResult = results.find((result) => result.date.getUTCDate() === new Date(dates[buttonIndex][2]).getUTCDate());
         return (
@@ -89,7 +89,7 @@ export function HabitCheck({color, result}:{color: string, result:HabitResult}) 
   return (
     <div>
       <button onClick={handleClick}>
-        {complete ? <CheckIcon className={`h-4 w-4 text-${color}`} /> : <XMarkIcon className="h-4 w-4 text-neutral-700" />}
+        {complete ? <CheckIcon className={`h-4 w-4 text-${color} font-bold rounded`} /> : <XMarkIcon className="h-4 w-4 text-neutral-700" />}
       </button>
     </div>
   );
@@ -100,7 +100,8 @@ function getPastDays(days: number) {
   const result:string[][] = [];
   for (let i = 0; i < days; i++) {
     const date:Date = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
-    date.setDate(date.getDate() - i);
+    date.setDate(date.getDate() - i + 1);
+    console.log(date)
     const formattedDate:string = date.toLocaleDateString('en-US', { day: 'numeric', weekday: 'short' });
     const splitDate:string[] = formattedDate.toUpperCase().split(' ')
     splitDate.push(date.toString());
@@ -129,7 +130,11 @@ export default function HabitTable({habits: initialHabits, habitResults}:{habits
   const pastDays = getPastDays(numberOfChecks); // Get the past n based on window size days
 
   return (
-    <div className="relative h-screen w-screen">
+    <div className="relative h-screen w-screen ">
+      <div className="w-32 font-semibold text-7xl text-white md:w-36">
+        <h1 >Habits</h1>
+        <h1 className="absolute z-50 block text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-pink-400 to-sky-300">Tracker</h1>
+      </div>
       <div className="absolute w-full md:left-[37.5%] top-0 h-full md:w-[62.5%] bg-neutral-900 shadow-md rounded-md">
         <div className="pl-1 pr-1 bg-neutral-950 flex justify-between">
           <h1 className = "text-neutral-50">Habits</h1>
@@ -146,7 +151,7 @@ export default function HabitTable({habits: initialHabits, habitResults}:{habits
           ))}
         </div>
         {habits.map((habit, habit_index) => (
-          <div className="p-1" key={habit_index}>
+          <div className="p-0.5" key={habit_index}>
             <HabitRow title={habit.title} 
             color = {habit.color} 
             numberOfChecks={numberOfChecks} 

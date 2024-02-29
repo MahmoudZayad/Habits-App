@@ -23,7 +23,7 @@ export function AddHabit() {
 }  
 
 export function AddHabitForm({userId}: {userId: string}) {
-    let color = "bg-[#64b5f6]";
+    let color = "bg-[#ee9a9a]";
     const [selectedColor, setSelectedColor] = useState(color);
     const [showColorPicker, setShowColorPicker] = useState(false);
     const [habitName, setHabitName] = useState('');
@@ -99,7 +99,7 @@ export function AddHabitForm({userId}: {userId: string}) {
                             placeholder="e.g. Read 30 minutes every day"
                             readOnly = {showColorPicker}
                             onChange = {(e) => setHabitDescription(e.target.value)}
-                            minLength={0}
+
                         />
                         <PencilIcon className="pointer-events-none absolute right-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-neutral-500 peer-focus:text-neutral-400" />
                     </div>
