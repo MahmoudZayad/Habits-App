@@ -3,6 +3,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import  { updateHabits, deleteHabit} from '../../lib/actions';
 import { Tooltip } from 'react-tooltip'
+import { DateTime } from 'luxon';
 
 import {
     CheckIcon,
@@ -11,26 +12,39 @@ import {
 
 import { Habit, HabitResult } from '@prisma/client';
 import { AddHabit } from '@/app/ui/habits/add-habit';   
+import Link from 'next/link';
 
 
 
 
-export function HabitRow({title, color, results, description, habitId, dates, numberOfChecks, habits, setHabits}:
-  {title:string, color:string, results:HabitResult[], description:string, habitId:string, dates:string[][], numberOfChecks:number, habits:Habit[], setHabits: Function}) {
-  
+export function HabitRow({ habits, results, habit_index, dates, numberOfChecks, setHabits, setResults}:
+  {habits:Habit[], results:HabitResult[][], habit_index:number, dates:string[][], numberOfChecks:number,  setHabits: Function, setResults: Function}) {
+    
+    const habitId:string = habits[habit_index].id
+    const title:string = habits[habit_index].title
+    const description:string = habits[habit_index].description
+    const color:string = habits[habit_index].color
+
     const handleDelete = async () => {
       // Keep a copy of the current habits in case we need to rollback
-      const previousHabits = [...habits];
-  
+      const previousHabits:Habit[] = [...habits];
+      const previousResults:HabitResult[][] = [...results]
+    
       // Optimistically remove the habit from the UI
-      setHabits(habits.filter(habit => habit.id !== habitId));
-  
+      setHabits((prevHabits:Habit[]) => prevHabits.filter(habit => habit.id !== habitId));
+      setResults((prevResults:HabitResult[][]) => {
+        const newResults = [...prevResults];
+        newResults.splice(habit_index, 1);
+        return newResults;
+      });
+    
       try {
         // Send the delete request to the server
         await deleteHabit(habitId);
       } catch (error) {
         // If the request fails, rollback the change in the UI and show an error message
         setHabits(previousHabits);
+        setResults(previousResults);
         alert('Failed to delete habit');
       }
     };
@@ -53,7 +67,7 @@ export function HabitRow({title, color, results, description, habitId, dates, nu
     </Tooltip>
     <div className="flex space-x-[20.75px] flex-row flex-wrap pr-[6px]">  
     {Array(numberOfChecks).fill(0).map((_, buttonIndex) => {
-        let foundResult = results.find((result) => result.date.getUTCDate() === new Date(dates[buttonIndex][2]).getUTCDate());
+        let foundResult = results[habit_index].find((result) => result.date.getUTCDate() === new Date(dates[buttonIndex][2]).getUTCDate());
         return (
           <HabitCheck 
             result={foundResult ? foundResult : {date:new Date(dates[buttonIndex][2]), completed:false, habitId:habitId} as HabitResult}
@@ -99,20 +113,18 @@ export function HabitCheck({color, result}:{color: string, result:HabitResult}) 
 function getPastDays(days: number) {
   const result:string[][] = [];
   for (let i = 0; i < days; i++) {
-    const date:Date = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
-    date.setDate(date.getDate() - i + 1);
-    console.log(date)
-    const formattedDate:string = date.toLocaleDateString('en-US', { day: 'numeric', weekday: 'short' });
+    const dateInCST = DateTime.now().setZone('America/Chicago').minus({ days: i });
+    const formattedDate:string = dateInCST.toLocaleString({ day: 'numeric', weekday: 'short' });
     const splitDate:string[] = formattedDate.toUpperCase().split(' ')
-    splitDate.push(date.toString());
+    splitDate.push(dateInCST.toISO());
     result.push(splitDate);
   }
   return result;
 }
 
-export default function HabitTable({habits: initialHabits, habitResults}:{habits:Habit[], habitResults:HabitResult[][]}) {
-  const habitsCopy:Habit[]  = [...initialHabits];
+export default function HabitTable({habits: initialHabits, habitResults: initialResults}:{habits:Habit[], habitResults:HabitResult[][]}) {
   const [habits, setHabits] = useState(initialHabits);
+  const [results, setResults] = useState(initialResults)
 
   // To dynamically resize window based on client window size
   const [windowWidth, setWindowWidth] = useState(0);
@@ -131,10 +143,12 @@ export default function HabitTable({habits: initialHabits, habitResults}:{habits
 
   return (
     <div className="relative h-screen w-screen ">
-      <div className="w-32 font-semibold text-7xl text-white md:w-36">
-        <h1 >Habits</h1>
-        <h1 className="absolute z-50 block text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-pink-400 to-sky-300">Tracker</h1>
-      </div>
+      <Link href = "/">
+        <div className=" w-32 font-semibold text-7xl text-white md:w-36">
+          <h1 >Habits</h1>
+          <h1 className="absolute text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-pink-400 to-sky-300">Tracker</h1>
+        </div>
+      </Link>
       <div className="absolute w-full md:left-[37.5%] top-0 h-full md:w-[62.5%] bg-neutral-900 shadow-md rounded-md">
         <div className="pl-1 pr-1 bg-neutral-950 flex justify-between">
           <h1 className = "text-neutral-50">Habits</h1>
@@ -152,15 +166,15 @@ export default function HabitTable({habits: initialHabits, habitResults}:{habits
         </div>
         {habits.map((habit, habit_index) => (
           <div className="p-0.5" key={habit_index}>
-            <HabitRow title={habit.title} 
-            color = {habit.color} 
+            <HabitRow 
+            key = {habit.id}
+            habits = {habits}
+            results = {results}
+            habit_index = {habit_index}
             numberOfChecks={numberOfChecks} 
-            results = {habitResults[habit_index]} 
-            description = {habit.description}
-            habitId = {habit.id}
             dates = {pastDays}
-            habits = {habitsCopy}
             setHabits = {setHabits}
+            setResults = {setResults}
             />
           </div>
         ))}

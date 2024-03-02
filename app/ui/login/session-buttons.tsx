@@ -1,7 +1,6 @@
 'use client'
 import { signIn, signOut } from "next-auth/react";
 import { Button } from './button';
-import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { 
   ArrowRightIcon,
@@ -30,7 +29,6 @@ export function SignOut() {
 }
 
 export function TrackMyHabits() {
-  // const router = useRouter();
 
   return (
     <Link href="/habits">
