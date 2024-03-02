@@ -9,7 +9,7 @@ export default async function LoginForm() {
   return (
     <div>
     { session ? (
-      <div className="bg-neutral-900 flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
+      <div className="bg-neutral-900 flex-1 rounded-lg px-6 pb-4 pt-8">
         <h1 className={`mb-3 text-center font-semibold text-2xl`}>
           Already signed in as {session.user?.name}
         </h1>
@@ -17,7 +17,7 @@ export default async function LoginForm() {
         <SignOut/>
       </div>
     ) : (  
-      <div className="bg-neutral-900 flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
+      <div className="bg-neutral-900 flex-1 rounded-lg px-6 pb-4 pt-8">
           <h1 className={`mb-3 text-center font-semibold text-3xl`}>
             Login
           </h1>

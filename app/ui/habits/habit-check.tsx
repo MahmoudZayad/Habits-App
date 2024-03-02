@@ -116,7 +116,10 @@ function getPastDays(days: number) {
     const dateInCST = DateTime.now().setZone('America/Chicago').minus({ days: i });
     const formattedDate:string = dateInCST.toLocaleString({ day: 'numeric', weekday: 'short' });
     const splitDate:string[] = formattedDate.toUpperCase().split(' ')
-    splitDate.push(dateInCST.toISO());
+    const isoDate:string | null = dateInCST.toISO();
+    if (isoDate) {
+      splitDate.push(isoDate);
+    }
     result.push(splitDate);
   }
   return result;
@@ -156,7 +159,7 @@ export default function HabitTable({habits: initialHabits, habitResults: initial
               <AddHabit/>
           </div>
         </div>
-        <div className="text-center flex justify-end space-x-3 text-xs text-neutral-500 pr-1">
+        <div className="text-center flex justify-end space-x-3 text-xs text-neutral-500 pr-2">
         {pastDays.map((day, index) => (
             <div key={index}>
               <div>{day[1]}</div>
